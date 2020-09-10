@@ -1,115 +1,97 @@
-const enhancer = require('./enhancer.js');
+const { repair, succeed, fail, get } = require("./enhancer.js");
 // test away!
 
-describe('.enhancer.js', ()=>{
+describe("enhancement functions", () => {
+  describe("repair()", () => {
+    it("should return an item with durability: 100", () => {
+      const item = { name: "sword", durability: 50 };
 
-    //testing .succeed function from enhancer
-    describe("enhancer succeed", () => {
-        it("succeed function must be called and return a new object with enhancement property increased by 1", () => {
-            expect(enhancer.succeed({
-                name: 'axe', 
-                durability: 100, 
-                enhancement: 20
-            })).toMatchObject({
-                name: 'axe', 
-                durability: 100, 
-                enhancement: 19
-            });
+      expect(repair(item)).toEqual({ name: "sword", durability: 100 });
+    });
 
-            expect(enhancer.succeed({
-                name: 'axe', 
-                durability: 57, 
-                enhancement: 19
-            })).toMatchObject({
-                name: 'axe', 
-                durability: 57, 
-                enhancement: 20
-            });
+    it.todo("should throw an exception if item type is not an object");
+  });
 
-            expect(enhancer.succeed({
-                name: 'axe', 
-                durability: 57, 
-                enhancement: 2
-            })).toMatchObject({
-                name: 'axe', 
-                durability: 57, 
-                enhancement: 3
-            });
-        })
-    })
+  describe("succeed()", () => {
+    it("should increase enhancement by 1", () => {
+      const item = {
+        name: "sword",
+        durability: 80,
+        enhancement: 5,
+      };
 
+      const expected = {
+        name: "sword",
+        durability: 80,
+        enhancement: 6,
+      };
+      expect(succeed(item)).toEqual(expected);
+    });
 
-    //testing .repair function from enhancer
-    describe("enhancer repair", () => {
-        it("repair function must be called and return an object with durability property equals to 100", () => {
-            expect(enhancer.repair({
-                name: 'axe', 
-                durability: 98, 
-                enhancement: '20'
-            })).toMatchObject({
-                name: 'axe', 
-                durability: 100, 
-                enhancement: '20'
-            });
+    it("should not increase if enhancement is already at 20", () => {
+      const item = {
+        name: "sword",
+        durability: 80,
+        enhancement: 20,
+      };
 
-            expect(enhancer.repair({
-                name: 'axe', 
-                durability: 57, 
-                enhancement: '20'
-            })).toMatchObject({
-                name: 'axe', 
-                durability: 100, 
-                enhancement: '20'
-            });
+      const expected = {
+        name: "sword",
+        durability: 80,
+        enhancement: 20,
+      };
 
-        })
-        //testing .fail function from enhancer
-    describe('enhancer.fail',() => {
-        it('.fail function must be called and return a new object with decreased durability level depending on enhancement level', ()=>{
+      expect(succeed(item)).toEqual(expected);
+    });
+  });
 
-            //If the item's enhancement is less than 15, the durability of the item is decreased by 5.
-            expect(enhancer.fail({
-                name: 'axe', 
-                durability: 100, 
-                enhancement: 14
-            })).toMatchObject({
-                name: 'axe', 
-                durability: 95, 
-                enhancement: 14
-            });
+  describe("fail()", () => {
+    it("shouuld decrease enhancement by one and inccrease durabiility by 10 when enhancement is over 16", () => {
+      const item = {
+        name: "sword",
+        durability: 80,
+        enhancement: 20,
+      };
 
-            //If the item's enhancement is 15 or more, the durability of the item is decreased by 10.
-            expect(enhancer.fail({
-                name: 'axe', 
-                durability: 57, 
-                enhancement: 15
-            })).toMatchObject({
-                name: 'axe', 
-                durability: 47, 
-                enhancement: 15
-            });
-            
-            //If the item's enhancement level is greater than 16, 
-            //the enhancement level decreases by 1 (17 goes down to 16, 18 goes down to 17).
-            expect(enhancer.fail({
-                name: 'axe', 
-                durability: 57, 
-                enhancement: 18
-            })).toMatchObject({
-                name: 'axe', 
-                durability: 47, 
-                enhancement: 17
-            });
-        })
-    })
+      const expected = {
+        name: "sword",
+        durability: 90,
+        enhancement: 19,
+      };
 
-    //for stretch
-    //testing .get function from enhancer
-    describe('enhancer.get',() => {
-        it('.get function must be called and return a new object with the name property modified', ()=>{
-            expect(enhancer.get(1,2,2,2)).toBeTruthy();
-        })
+      expect(fail(item)).toEqual(expected);
+    });
 
-    })
-    })
-})
+    it("should should decrease durability by 5 when enhancement is less than 15", () => {
+      const item = {
+        name: "sword",
+        durability: 80,
+        enhancement: 14,
+      };
+
+      const expected = {
+        name: "sword",
+        durability: 85,
+        enhancement: 14,
+      };
+
+      expect(fail(item)).toEqual(expected);
+    });
+
+    it("should increase durability by 10 if enhancement is greater than or equal to 15", () => {
+      const item = {
+        name: "sword",
+        durability: 80,
+        enhancement: 17,
+      };
+
+      const expected = {
+        name: "sword",
+        durability: 90,
+        enhancement: 16,
+      };
+
+      expect(fail(item)).toEqual(expected);
+    });
+  });
+});

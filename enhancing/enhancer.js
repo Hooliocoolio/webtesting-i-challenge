@@ -1,49 +1,36 @@
 module.exports = {
-  success,
+  succeed,
   fail,
   repair,
   get,
 };
 
-function success(item) {
-  return item.enhancement === 20 
-    ? {...item} : {...item, enhancement : item.enhancement + 1} ;
+function succeed(item) {
+  if (item.enhancement >= 20) {
+    return item;
+  }
+  const updatedEnhancement = item.enhancement + 1;
+  return { ...item, enhancement: updatedEnhancement };
 }
 
 function fail(item) {
-  let newObj = {}
-  let objDurability = 0;
-
-  if ( item.enhancement < 15 ) {
-    item.durability > 0 
-    ? objDurability = item.durability - 5 
-    : objDurability = 0;
-    
-    newObj = { ...item, durability : objDurability }
-  } else if ( item.enhancement >= 15 ) {
-    item.durability > 0 
-    ? objDurability = item.durability - 10 
-    : objDurability = 0;
-
-    newObj = {...item, durability: objDurability }
-    if(item.enhancement > 16){
-      newObj = {
-        name: item.name,
-        durability: objDurability,
-        enhancement: item.enhancement - 1 
-      }
-    }
+  if (item.enhancement > 16) {
+    item.enhancement = item.enhancement - 1;
   }
-
-  return newObj;
+  if (item.enhancement < 15) {
+    item.durability = item.durability + 5;
+    return { ...item };
+  } else if (item.enhancement >= 15) {
+    item.durability = item.durability + 10;
+  }
+  return { ...item };
 }
 
 function repair(item) {
-  return {
-    name: item.name,
-    enhancement: item.enhancement,
-    durability: 100
-  };
+  if (typeof item !== "object") {
+    throw new Error("Item must be an object");
+  }
+  return { ...item, durability: 100 };
 }
 
 function get(item) {
